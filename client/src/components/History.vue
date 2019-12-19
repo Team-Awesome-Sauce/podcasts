@@ -3,7 +3,7 @@
   <div>
     <h2>My Listening History</h2>
     <ul>
-      <li v-for="item in myHistory">
+      <li v-for="(item, index) in myHistory" v-bind:key="index">
         <span>{{ item.episode_id }}</span>
         <!-- would like to format the viewing of time stamp to be cleaner (take off GMT)  -->
         <span>{{ item.time_stamp_accessed}}</span>

@@ -13,7 +13,7 @@ def serve_all_subscriptions():
     user_in_session_db_info = db.session.query(Users).filter(Users.username == user_in_session_username).first()
     user_id = user_in_session_db_info.id
     podcast_instances = db.session.query(Podcast).filter(Podcast.user_id == user_id).all()
-    podcast_items = [{"id": podcast.id, "name": podcast.name, "rss_feed_url": podcast.rss_feed_url} for podcast in podcast_instances]
+    podcast_items = [{"id": podcast.id, "name": podcast.name, "rss_feed_url": podcast.rss_feed_url, "podcast_id": podcast.podcast_API_id} for podcast in podcast_instances]
     return jsonify({"name": podcast_items})
 
 
