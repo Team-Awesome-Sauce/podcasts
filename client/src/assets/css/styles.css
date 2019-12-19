@@ -73,3 +73,6 @@ button.button {
   display: inline-block;
   margin-left: 10px;
 }
+#app {
+  margin-bottom: 100px;
+}

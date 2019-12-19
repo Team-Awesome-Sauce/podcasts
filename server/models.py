@@ -37,6 +37,10 @@ class PlaylistItems(db.Model):
 class History(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    # episode_name : currently storing title in place of unique episode ID
-    episode_id = db.Column(db.String)
+    episode_title = db.Column(db.String)
+    episode_summary = db.Column(db.String)
+    episode_url = db.Column(db.String)
     time_stamp_accessed = db.Column(db.DateTime, default=datetime.now())
+    current_time_listened = db.Column(db.Integer)
+    parent_podcast_id = db.Column(db.Integer)
+    parent_podcast_art_url = db.Column(db.String)

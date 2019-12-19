@@ -27,6 +27,20 @@
         </router-link>
       </nav>
     </div>
+    <nav>
+      <router-link to="/subscriptions">
+        <img class="icon" src="./assets/images/my-list.png" />
+      </router-link>
+      <router-link to="/searchresults">
+        <img class="icon" src="./assets/images/search.png" />
+      </router-link>
+      <router-link to="/browse">
+        <img class="icon" src="./assets/images/browse.png" />
+      </router-link>
+      <router-link to="/history">
+        <img class="icon" src="./assets/images/my_history.png" />
+      </router-link>
+    </nav>
   </div>
 </template>
 
@@ -56,12 +70,12 @@ export default {
           this.$router.push("/subscriptions");
         });
     },
-    viewThisPodcast(url, name) {
+    viewThisPodcast(url, name, id) {
       this.podcastName = name;
       this.podcastFeedURL = url;
+      this.podcastId = id;
       this.$router.push("/podcast");
     },
-    //The methods below simply show components and hide others when the user clicks on elements of the page.
     logout() {
       axios.post("/logout");
       this.loggedIn = false;
@@ -90,7 +104,7 @@ export default {
         this.subscribeToPodcast(name, url, podcast_id);
         return;
       }
-      this.viewThisPodcast(url, name);
+      this.viewThisPodcast(url, name, podcast_id);
     }),
       browseBus.$on(
         "feedFromBrowse",
@@ -99,7 +113,7 @@ export default {
             this.subscribeToPodcast(name, url, podcast_id);
             return;
           }
-          this.viewThisPodcast(url, name);
+          this.viewThisPodcast(url, name, podcast_id);
         }
       );
   },

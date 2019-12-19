@@ -45,6 +45,5 @@ def remove_subscription():
 @podcast_api.route('/itunes-api', methods=['POST'])
 def get_feed():
     rss_feed = request.json["rss_feed"]
-    podcast_info = requests.get("https://cors-anywhere.herokuapp.com/" +
-                                rss_feed, headers={"X-Requested-With": "XMLHttpRequest"})
+    podcast_info = requests.get("https://cors-anywhere.herokuapp.com/" + rss_feed, headers={"X-Requested-With": "XMLHttpRequest"})
     return podcast_info.content
