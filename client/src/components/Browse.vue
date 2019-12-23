@@ -57,11 +57,12 @@
         {{topTenPodcast['im:name'].label}}
         <button
           class="button"
+          :disabled="checkIfSubscribed"
           @click="subscribing = true"
         >Subscribe</button>
       </li>
     </ol>
-    <button @click="checkIfSubscribed">check me</button>
+    <button @click="checkIfSubscribed()">check me</button>
   </div>
 </template>
 
@@ -77,7 +78,9 @@ export default {
       topTenPodcasts: [],
       podcastFeedUrl: "",
       viewTopList: false,
-      subscribing: false
+      subscribing: false,
+      show_podcast_API_id: [],
+      newArrayPodIDs: []
     };
   },
   methods: {
@@ -106,6 +109,7 @@ export default {
             "&entity=podcast"
         )
         .then(data => {
+          console.log("POD ID IS ", podID);
           this.podcastFeedUrl = data.data.results[0].feedUrl;
           browseBus.$emit(
             "feedFromBrowse",
@@ -118,13 +122,22 @@ export default {
     },
     checkIfSubscribed() {
       axios.get("/subscriptions").then(res => {
-        console.log("Podcast id: ", res.data.podcast_API_id);
-        console.log("------");
-        this.show_podcast_API_id = res.data;
-        console.log("show me: ", this.show_podcast_API_id);
+        this.show_podcast_API_id = res.data.name;
+        this.newArrayPodIDs = [];
+        for (let i = 0; i < this.show_podcast_API_id.length; i++) {
+          this.newArrayPodIDs.push(this.show_podcast_API_id[i].podcast_id);
+        }
+        console.log(this.newArrayPodIDs);
+        //this function gives an ARRAY of podcast IDS found in the db.  in
+        //the function getRSSFeed - the podID also corresponds to podcast_id when getting these
+        //search results.  Perhaps we can use this to emit to parent and then check if
+        //user is subscribed. or simply a V-if statement to disable the button.
       });
     }
   }
+  // mounted() {
+  //   this.checkIfSubscribed();
+  // }
 };
 </script>
 

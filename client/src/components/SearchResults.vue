@@ -13,8 +13,7 @@
         <button
           class="button"
           @click="subscribe(searchResult.feedUrl, searchResult.collectionName, searchResult.collectionId)"
-          :disabled="checkIfSubscribed(podcast_id)"
-        >{{ buttonText }}</button>
+        >{ buttonText }</button>
       </li>
     </ul>
   </div>
@@ -33,7 +32,7 @@ export default {
       subscribing: false,
       subscriptions: [],
       disable_subscribe: false,
-      show_podcast_API_id: "",
+      show_podcast_API_id: [],
       buttonText: "",
       podcast_id: ""
     };
@@ -54,24 +53,6 @@ export default {
     subscribe(url, name, podcast_id) {
       this.subscribing = true;
       this.sendFeedtoApp(url, name, podcast_id);
-    },
-    //fix this function. not workimg to check if item is in subscriptions and then
-    //idea is to disable the sibscribe button and change the text.
-    checkIfSubscribed(podcast_id) {
-      axios.get("/subscriptions").then(res => {
-        this.show_podcast_API_id = res.data.name;
-        for (var i = 0; i < this.show_podcast_API_id.length; i++) {
-          let id_list = this.show_podcast_API_id[i].podcast_id;
-          console.log(typeof id_list);
-          if (id_list.includes(i)) {
-            this.disable_subscribe = true;
-            console.log(podcast_id);
-            this.buttonText = "You are subscribed";
-          } else {
-            this.buttonText = "Subscribe";
-          }
-        }
-      });
     },
     sendFeedtoApp(url, name, podcast_id) {
       let isSubscribing = this.subscribing;

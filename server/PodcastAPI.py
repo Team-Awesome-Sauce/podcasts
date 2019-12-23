@@ -6,6 +6,16 @@ from sqlalchemy import func
 
 podcast_api = Blueprint('podcast_api', __name__)
 
+@podcast_api.route('/check-if-subscribed', methods=['GET'])
+def check_if_user_is_subscribed():
+    #podcast_id = request.json["podcast_id"]
+    #print("----------->", podcast_API_id)
+    user_in_session_username = session['user']
+    user_in_session_db_info = db.session.query(Users).filter(Users.username == user_in_session_username).first()
+    user_id = user_in_session_db_info.id
+    podcast_ids_instances = db.session.query(Podcast).filter(Podcast.user_id == user_id).filter(Podcast.podcast_API_id == podcast_id).all()
+    podcast_API_ids_list = [ {"id": podcast.id, "podcast_API_id": podcast.podcast_API_id} for pod_ids in podcast_ids_instances]
+    return jsonify ({"podcast_API_ids": podcast_API_ids_list})
 
 @podcast_api.route('/subscriptions', methods=['GET'])
 def serve_all_subscriptions():

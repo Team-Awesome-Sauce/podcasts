@@ -81,7 +81,7 @@ RUN_ENVIRONMENT=‘insert your data'
     - `npm run build`
   - In the other tab, navigate into the Server folder and enter:
     - `pipenv run python main.py`
-- Navigate to https://localhost:5000/ on your browser
+- Navigate to https://localhost:5000/ (or specified address in terminal) on your browser
 
 ## Caveats and Good-To-Knows
 

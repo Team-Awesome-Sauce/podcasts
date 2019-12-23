@@ -11,7 +11,7 @@ history_api = Blueprint('history_api', __name__)
 
 @history_api.route('/duplicate-history-entry-test', methods=["POST"])
 def test_duplicate_history_entry():
-    # return either a current user object (in the case that a username already exists),
+    # return either a current object (in the case that a username already exists),
     # or an empty array (if a username hasn't been taken yet)
     episode_title = request.json["episode_title"]
     user = session['user']
