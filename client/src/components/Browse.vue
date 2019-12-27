@@ -57,12 +57,11 @@
         {{topTenPodcast['im:name'].label}}
         <button
           class="button"
-          :disabled="checkIfSubscribed"
+          :disabled="disableSubscribeButton()"
           @click="subscribing = true"
         >Subscribe</button>
       </li>
     </ol>
-    <button @click="checkIfSubscribed()">check me</button>
   </div>
 </template>
 
@@ -80,7 +79,10 @@ export default {
       viewTopList: false,
       subscribing: false,
       show_podcast_API_id: [],
-      newArrayPodIDs: []
+      newArrayPodIDs: [],
+      isDisabled: false,
+      podcast_id: "",
+      idsOfTopTenPodcasts: []
     };
   },
   methods: {
@@ -92,8 +94,30 @@ export default {
         )
         .then(data => {
           this.topTenPodcasts = data.data.feed.entry;
+          //makes an array of topTenPodcast podcast ids to compare them to currently subscribed PodIDs
+          this.isDisabled = false;
+          this.idsOfTopTenPodcasts = [];
+          for (let i = 0; i < this.topTenPodcasts.length; i++) {
+            this.idsOfTopTenPodcasts.push(
+              this.topTenPodcasts[i]["id"].attributes["im:id"]
+            );
+            // if (
+            //   value in this.newArrayPodIDs ===
+            //   value in this.idsOfTopTenPodcasts
+            // ) {
+            //   this.isDisabled = true;
+            // }
+          }
           this.viewTopList = true;
         });
+    },
+    //testing out this feature but so far does NOTHING...
+    disableSubscribeButton() {
+      this.isDisabled = false;
+      for (var i = 0; i < this.idsOfTopTenPodcasts.length; i++) {
+        if (this.idsOfTopTenPodcasts[i] == this.newArrayPodIDs[i])
+          this.isDisabled = true;
+      }
     },
     //Since the json data in the above response does not return a feedUrl as a variable, the id needs to be parsed out of the url and sent to a different itunes api call that will return the feedUrl. The feedUrl is important because it's what returns the list of episodes.
     getRSS(url, name) {
@@ -109,7 +133,6 @@ export default {
             "&entity=podcast"
         )
         .then(data => {
-          console.log("POD ID IS ", podID);
           this.podcastFeedUrl = data.data.results[0].feedUrl;
           browseBus.$emit(
             "feedFromBrowse",
@@ -120,24 +143,20 @@ export default {
           );
         });
     },
-    checkIfSubscribed() {
+    //makes an array of currently subscribed podcast_API_ids which are saved in db.
+    subscriptionIDsArray() {
       axios.get("/subscriptions").then(res => {
         this.show_podcast_API_id = res.data.name;
         this.newArrayPodIDs = [];
         for (let i = 0; i < this.show_podcast_API_id.length; i++) {
           this.newArrayPodIDs.push(this.show_podcast_API_id[i].podcast_id);
         }
-        console.log(this.newArrayPodIDs);
-        //this function gives an ARRAY of podcast IDS found in the db.  in
-        //the function getRSSFeed - the podID also corresponds to podcast_id when getting these
-        //search results.  Perhaps we can use this to emit to parent and then check if
-        //user is subscribed. or simply a V-if statement to disable the button.
       });
     }
+  },
+  mounted() {
+    this.subscriptionIDsArray();
   }
-  // mounted() {
-  //   this.checkIfSubscribed();
-  // }
 };
 </script>
 
