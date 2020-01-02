@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 <template>
   <div class="categories">
     <h2>Browse Top Podcasts by Category</h2>
@@ -57,7 +58,7 @@
         {{topTenPodcast['im:name'].label}}
         <button
           class="button"
-          :disabled="disableSubscribeButton()"
+          :disabled="isDisabled"
           @click="subscribing = true"
         >Subscribe</button>
       </li>
@@ -79,10 +80,11 @@ export default {
       viewTopList: false,
       subscribing: false,
       show_podcast_API_id: [],
-      newArrayPodIDs: [],
+      subscribedPodIDs: [],
       isDisabled: false,
       podcast_id: "",
-      idsOfTopTenPodcasts: []
+      idsOfTopTenPodcasts: [],
+      newArrayTopTenids: []
     };
   },
   methods: {
@@ -94,30 +96,26 @@ export default {
         )
         .then(data => {
           this.topTenPodcasts = data.data.feed.entry;
-          //makes an array of topTenPodcast podcast ids to compare them to currently subscribed PodIDs
           this.isDisabled = false;
           this.idsOfTopTenPodcasts = [];
           for (let i = 0; i < this.topTenPodcasts.length; i++) {
             this.idsOfTopTenPodcasts.push(
               this.topTenPodcasts[i]["id"].attributes["im:id"]
             );
-            // if (
-            //   value in this.newArrayPodIDs ===
-            //   value in this.idsOfTopTenPodcasts
-            // ) {
-            //   this.isDisabled = true;
-            // }
+            this.newArrayTopTenids = this.idsOfTopTenPodcasts.map(Number);
+            //above makes array of top tenpodcast IDS as numbers (newArrayTopTenids).
           }
           this.viewTopList = true;
+          //this is making all items DISABLED so how can i change it to just subscribed item
+          if (
+            this.subscribedPodIDs.some(
+              item => this.newArrayTopTenids.indexOf(item) !== -1
+            )
+          ) {
+            console.log("toptenlist if statement executing");
+            this.isDisabled = true;
+          }
         });
-    },
-    //testing out this feature but so far does NOTHING...
-    disableSubscribeButton() {
-      this.isDisabled = false;
-      for (var i = 0; i < this.idsOfTopTenPodcasts.length; i++) {
-        if (this.idsOfTopTenPodcasts[i] == this.newArrayPodIDs[i])
-          this.isDisabled = true;
-      }
     },
     //Since the json data in the above response does not return a feedUrl as a variable, the id needs to be parsed out of the url and sent to a different itunes api call that will return the feedUrl. The feedUrl is important because it's what returns the list of episodes.
     getRSS(url, name) {
@@ -143,17 +141,33 @@ export default {
           );
         });
     },
-    //makes an array of currently subscribed podcast_API_ids which are saved in db.
+    //makes an array of currently subscribed podcast_API_ids from db.
     subscriptionIDsArray() {
       axios.get("/subscriptions").then(res => {
         this.show_podcast_API_id = res.data.name;
-        this.newArrayPodIDs = [];
+        this.subscribedPodIDs = [];
         for (let i = 0; i < this.show_podcast_API_id.length; i++) {
-          this.newArrayPodIDs.push(this.show_podcast_API_id[i].podcast_id);
+          this.subscribedPodIDs.push(this.show_podcast_API_id[i].podcast_id);
+          //creates an array of numbers
         }
       });
+    },
+    //this method is the idea of what I need to disable button but does not work :(
+    //perhaps I did not use it in the right places in the HTML.
+    disableSubscribeButton() {
+      this.isDisabled = false;
+      if (
+        this.subscribedPodIDs.some(
+          item => this.newArrayTopTenids.indexOf(item) !== -1
+        )
+      ) {
+        console.log("disable subscribe button method executing?");
+        this.isDisabled = true;
+      }
     }
   },
+  //need a method that returns true or false and therefore changes 'isDisabled's status.
+
   mounted() {
     this.subscriptionIDsArray();
   }
@@ -161,4 +175,7 @@ export default {
 </script>
 
 <style>
+button:disabled {
+  background-color: #999;
+}
 </style>
