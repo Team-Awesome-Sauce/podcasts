@@ -23,7 +23,6 @@ def add_user():
     # add a new user to the User Table in DB
     new_user = Users()
     new_user.username = request.json["username"]
-    username.lower()
     plain_text_password = request.json["password"]
     salt = make_salt()
     # save unique salts in the db with each user
